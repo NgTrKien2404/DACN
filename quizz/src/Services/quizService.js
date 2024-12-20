@@ -63,11 +63,20 @@ const getQuizResult = async (quizId) => {
     }
 };
 
+const getQuizHistory = async () => {
+    const response = await fetch('http://localhost:5000/api/quiz-history');
+    if (!response.ok) {
+        throw new Error('Không thể lấy lịch sử làm bài');
+    }
+    return response.json();
+};
+
 const quizService = {
     getQuizzes,
     getQuizById,
     submitQuiz,
-    getQuizResult
+    getQuizResult,
+    getQuizHistory
 };
 
 export default quizService;

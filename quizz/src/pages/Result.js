@@ -13,7 +13,7 @@ const Result = () => {
     useEffect(() => {
         const fetchResult = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/results/${quizId}`);
+                const response = await axios.get(`http://localhost:5000/api/result/${quizId}`);
                 if (response.data.success) {
                     setResult(response.data.result);
                 }

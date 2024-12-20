@@ -59,3 +59,44 @@
     text-decoration: none;
     color: #666;
 }
+
+.card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.card:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #00796b;
+    margin-bottom: 10px;
+}
+
+.card-content {
+    font-size: 16px;
+    color: #333;
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.input-field:focus {
+    border-color: #00796b;
+    box-shadow: 0 0 5px rgba(0, 121, 107, 0.5);
+    outline: none;
+}

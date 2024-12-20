@@ -1,5 +1,8 @@
 .home-container {
-    padding-top: 80px;
+    width: 100vw ;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
     overflow-x: hidden;
     background: #f8fafc;
 }
@@ -9,15 +12,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4rem 8%;
+    padding: 10rem 0;
     background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
     min-height: calc(100vh - 80px);
+    width: 100%;
 }
 
 .hero-content {
     flex: 1;
-    max-width: 600px;
+    max-width: 900px;
     padding-right: 40px;
+    box-sizing: border-box;
 }
 
 .hero-content h1 {
@@ -85,7 +90,8 @@
 
 .hero-image {
     flex: 1;
-    max-width: 600px;
+    max-width: 900px;
+    
     animation: float 6s ease-in-out infinite;
 }
 

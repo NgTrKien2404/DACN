@@ -1,4 +1,4 @@
-const Result = require('../models/Result');
+const Result = require('../model/Result');
 
 exports.submitQuiz = async (req, res) => {
     try {
@@ -22,6 +22,9 @@ exports.submitQuiz = async (req, res) => {
                 received: { quiz_id, user_id, answersLength: answers?.length }
             });
         }
+
+        // Log answers to check data
+        console.log('Answers:', answers);
 
         // Calculate score
         const totalQuestions = answers.length;
@@ -64,6 +67,17 @@ exports.submitQuiz = async (req, res) => {
 
     } catch (error) {
         console.error('Submit quiz error details:', error);
+
+        // Add more specific error logging
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error occurred',
+                error: error.message
+            });
+        }
+
+        // Return generic error message
         res.status(500).json({
             success: false,
             message: 'Error saving result',
@@ -72,55 +86,3 @@ exports.submitQuiz = async (req, res) => {
         });
     }
 };
-
-// Get results by user ID
-exports.getUserResults = async (req, res) => {
-    try {
-        const { userId } = req.params;
-
-        const results = await Result.find({ user_id: userId })
-            .sort({ created_at: -1 });
-
-        res.json({
-            success: true,
-            data: results
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching user results',
-            error: error.message
-        });
-    }
-};
-
-// Get specific result by ID
-exports.getResultById = async (req, res) => {
-    try {
-        const { resultId } = req.params;
-
-        const result = await Result.findById(resultId)
-            .populate('quiz_id', 'title questions')
-            .populate('user_id', 'name email');
-
-        if (!result) {
-            return res.status(404).json({
-                success: false,
-                message: 'Result not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            data: result
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching result',
-            error: error.message
-        });
-    }
-}; 

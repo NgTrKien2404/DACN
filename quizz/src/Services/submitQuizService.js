@@ -4,6 +4,15 @@ const API_URL = 'http://localhost:5000/api';
 
 const formatQuizSubmission = (quiz, userAnswers, userId) => {
     try {
+        // Kiểm tra dữ liệu quiz và userAnswers
+        if (!quiz || !quiz.questions || !Array.isArray(quiz.questions)) {
+            throw new Error('Invalid quiz data');
+        }
+
+        if (!userAnswers || typeof userAnswers !== 'object') {
+            throw new Error('Invalid user answers data');
+        }
+
         const formattedAnswers = Object.entries(userAnswers).map(([index, option]) => ({
             question_index: parseInt(index),
             selected_answer: option,
@@ -14,7 +23,7 @@ const formatQuizSubmission = (quiz, userAnswers, userId) => {
         const score = Math.round((correctAnswers / quiz.questions.length) * 100);
 
         return {
-            quiz_id: quiz.id,
+            quiz_id: quiz._id,  // Dùng _id thay vì id nếu dùng MongoDB
             user_id: userId,
             answers: formattedAnswers,
             score: score
@@ -27,30 +36,32 @@ const formatQuizSubmission = (quiz, userAnswers, userId) => {
 
 const submitQuizResult = async (submitData) => {
     try {
-        const token = localStorage.getItem('token');
-        console.log('Submitting data:', submitData);
-
-        const response = await axios.post(`${API_URL}/results/submit`, submitData, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+        // Thêm log chi tiết để kiểm tra dữ liệu
+        console.log('Data being submitted:', {
+            quiz_id: submitData.quiz_id,
+            user_id: submitData.user_id,
+            answers: submitData.answers,
+            score: submitData.score,
+            // Kiểm tra xem có thiếu trường required nào không
+            missingFields: {
+                quiz_id: !submitData.quiz_id,
+                user_id: !submitData.user_id,
+                answers: !submitData.answers,
+                score: submitData.score === undefined,
+                reading_id: !submitData.reading_id,
+                title: !submitData.title
             }
         });
 
-        console.log('Server response:', response.data);
-
-        return {
-            success: true,
-            data: response.data,
-            score: submitData.score
-        };
+        const response = await axios.post(`${API_URL}/results`, submitData);
+        return response.data;
     } catch (error) {
-        console.error('Submit error:', error);
-        throw new Error(
-            error.response?.data?.message || 
-            error.message || 
-            'Failed to submit quiz'
-        );
+        console.error('Submit error details:', {
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message
+        });
+        throw error;
     }
 };
 
@@ -59,4 +70,4 @@ export const submitQuizService = {
     submitQuizResult
 };
 
-export default submitQuizService; 
+export default submitQuizService;

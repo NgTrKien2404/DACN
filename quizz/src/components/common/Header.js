@@ -44,7 +44,9 @@ const Header = () => {
                     <Link to="/quiz" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                         Quizz test
                     </Link>
-                    
+                    <Link to="/quiz-history" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                        History
+                    </Link>
                     {user ? (
                         <div className="user-menu">
                             <div className="user-profile">
@@ -61,7 +63,7 @@ const Header = () => {
                             </div>
                             <div className="dropdown-menu">
                                 <div className="dropdown-item" onClick={handleProfileClick}>
-                                    <i className="fas fa-user"></i> Admin
+                                    <i className="fas fa-user"></i> User
                                 </div>
                                 <div className="dropdown-item" onClick={handleLogout}>
                                     <i className="fas fa-sign-out-alt"></i> Sign out
@@ -71,10 +73,10 @@ const Header = () => {
                     ) : (
                         <div className="auth-buttons">
                             <Link to="/login" className="login-btn" onClick={() => setIsMenuOpen(false)}>
-                                Đăng nhập
+                                Sign in
                             </Link>
                             <Link to="/register" className="register-btn" onClick={() => setIsMenuOpen(false)}>
-                                Đăng ký
+                                Sign up
                             </Link>
                         </div>
                     )}

@@ -1,42 +1,51 @@
 const mongoose = require('mongoose');
 
-const resultSchema = new mongoose.Schema({
-    quiz_id: {
-        type: String,
-        required: true
+const answerSchema = new mongoose.Schema({
+    userAnswer: { 
+        type: String, 
+        required: true 
     },
-    user_id: {
-        type: String,
-        required: true
+    correctAnswer: { 
+        type: String, 
+        required: true 
     },
-    answers: [{
-        question_index: Number,
-        selected_answer: String,
-        correct_answer: String,
-        is_correct: Boolean
-    }],
-    score: {
-        type: Number,
-        required: true
-    },
-    reading_id: {
-        type: String,
-        required: true
-    },
-    title: {
-        type: String,
-        required: true
-    },
-    submittedAt: {
-        type: Date,
-        default: Date.now
-    },
-    created_at: {
-        type: Date,
-        default: Date.now
+    isCorrect: { 
+        type: Boolean, 
+        required: true 
     }
-}, {
-    timestamps: true
+}, { _id: false });
+
+const resultSchema = new mongoose.Schema({
+    quizId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Quiz', 
+        required: true 
+    },
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
+    answers: [answerSchema],
+    score: { 
+        type: Number, 
+        required: true,
+        min: 0,
+        max: 100
+    },
+    submittedAt: { 
+        type: Date, 
+        default: Date.now 
+    },
+    userInfo: {
+        email: { type: String },
+        User_name: { type: String }
+    }
+}, { 
+    timestamps: true,
+    versionKey: false
 });
 
-module.exports = mongoose.model('Result', resultSchema);
+const Result = mongoose.model('Result', resultSchema);
+
+module.exports = Result;

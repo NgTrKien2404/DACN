@@ -1,5 +1,6 @@
 .user-dashboard {
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1920px;
     margin: 120px auto 40px;
     padding: 0 20px;
 }
@@ -11,7 +12,7 @@
     margin-bottom: 30px;
     margin-top: 40px;
     background: rgba(255, 255, 255, 0.8);
-    padding: 25px 30px;
+    padding: 30px 40px;
     border-radius: 16px;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -32,26 +33,26 @@
 }
 
 .welcome-text h1 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: #2d3748;
     margin-bottom: 5px;
 }
 
 .welcome-text p {
     color: #718096;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
 }
 
 .logout-button {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 15px 30px;
     border: none;
     border-radius: 8px;
     background: #f8f9fa;
     color: #e53e3e;
-    font-size: 0.95rem;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -62,10 +63,11 @@
 }
 
 .dashboard-content {
-    background: white;
+    background:  white;
     border-radius: 16px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     overflow: hidden;
+    padding: 40px;
 }
 
 .dashboard-tabs {
@@ -113,7 +115,7 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    padding: 20px;
+    padding: 30px;
     background: #f8fafc;
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -146,7 +148,7 @@
 .info-content p {
     color: #2d3748;
     font-weight: 500;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 }
 
 .history-stats {
@@ -191,7 +193,7 @@
 .history-card {
     background: #f8fafc;
     border-radius: 12px;
-    padding: 20px;
+    padding: 30px;
     transition: all 0.3s ease;
 }
 
@@ -212,7 +214,7 @@
     align-items: center;
     gap: 8px;
     color: #2d3748;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 }
 
 .status-badge {
@@ -314,6 +316,7 @@
 
 @media (max-width: 768px) {
     .user-dashboard {
+        background:auto;
         margin: 100px auto 30px;
         padding: 0 15px;
     }
@@ -348,4 +351,145 @@
     .user-avatar {
         font-size: 2.5rem;
     }
+} 
+
+/* Gradient backgrounds */
+.bg-gradient-light {
+    background: linear-gradient(to right, #f7f9fc, #edf2f7);
+}
+
+/* Card styles */
+.quiz-card {
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Animation cho cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.grid > div {
+    animation: fadeInUp 0.5s ease-out forwards;
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.grid > div:hover {
+    background: linear-gradient(145deg, #f8fafc, #ffffff);
+    box-shadow: 0 10px 20px rgba(66, 153, 225, 0.1);
+}
+
+.grid > div:nth-child(1) { animation-delay: 0.1s; }
+.grid > div:nth-child(2) { animation-delay: 0.2s; }
+.grid > div:nth-child(3) { animation-delay: 0.3s; }
+
+/* Score colors */
+.score-excellent {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    color: white;
+}
+
+.score-good {
+    background: linear-gradient(135deg, #ecc94b, #d69e2e);
+    color: white;
+}
+
+.score-poor {
+    background: linear-gradient(135deg, #f56565, #e53e3e);
+    color: white;
+}
+
+/* Progress bar styles */
+.progress-bar-bg {
+    background-color: #edf2f7;
+}
+
+.progress-bar-fill-excellent {
+    background: linear-gradient(to right, #48bb78, #38a169);
+}
+
+.progress-bar-fill-good {
+    background: linear-gradient(to right, #ecc94b, #d69e2e);
+}
+
+.progress-bar-fill-poor {
+    background: linear-gradient(to right, #f56565, #e53e3e);
+}
+
+/* Header styles */
+.section-header {
+    color: #2d3748;
+    border-bottom: 3px solid #4299e1;
+}
+
+/* Empty state styles */
+.empty-state {
+    background: linear-gradient(145deg, #f7fafc, #edf2f7);
+    color: #718096;
+}
+
+/* Status badge styles */
+.status-badge-excellent {
+    background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+    color: #22543d;
+}
+
+.status-badge-good {
+    background: linear-gradient(135deg, #fefcbf, #faf089);
+    color: #744210;
+}
+
+.status-badge-poor {
+    background: linear-gradient(135deg, #fed7d7, #feb2b2);
+    color: #742a2a;
+}
+
+/* Hover effects */
+.hover\:shadow-xl:hover {
+    box-shadow: 0 20px 25px -5px rgba(66, 153, 225, 0.1),
+                0 10px 10px -5px rgba(66, 153, 225, 0.05);
+}
+
+/* Progress bar animation */
+@keyframes progressFill {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+.h-2 div {
+    animation: progressFill 1s ease-out forwards;
+}
+
+/* Line clamp for long titles */
+.line-clamp-2 {
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
 } 

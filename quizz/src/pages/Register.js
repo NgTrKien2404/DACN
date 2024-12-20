@@ -59,14 +59,14 @@ const Register = () => {
     return (
         <div className="login-container">
             <div className="login-card">
-                <h2>Đăng ký tài khoản</h2>
+                <h2>Create an account</h2>
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <input
                             type="text"
                             name="User_name"
-                            placeholder="Tên người dùng"
+                            placeholder="Username"
                             value={formData.User_name}
                             onChange={handleChange}
                             required
@@ -86,7 +86,7 @@ const Register = () => {
                         <input
                             type="password"
                             name="password"
-                            placeholder="Mật khẩu"
+                            placeholder="Password"
                             value={formData.password}
                             onChange={handleChange}
                             required
@@ -98,14 +98,14 @@ const Register = () => {
                         disabled={isLoading}
                     >
                         {isLoading ? (
-                            <span>Đang đăng ký...</span>
+                            <span>Registering...</span>
                         ) : (
-                            <span>Đăng ký</span>
+                            <span>Register</span>
                         )}
                     </button>
                 </form>
                 <div className="login-footer">
-                    <p>Đã có tài khoản? <Link to="/login">Đăng nhập</Link></p>
+                    <p>Already have an account? <Link to="/login">Login</Link></p>
                 </div>
             </div>
         </div>

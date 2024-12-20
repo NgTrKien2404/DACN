@@ -1,51 +1,26 @@
-import React, { createContext, useContext, useState } from 'react';
-import axios from 'axios';
+import React, { createContext, useState, useContext } from 'react';
 
 const AuthContext = createContext(null);
 
-// Cấu hình axios
-axios.defaults.baseURL = 'http://localhost:5000';
-axios.defaults.headers.common['Content-Type'] = 'application/json';
-axios.defaults.withCredentials = false;
-
 export const AuthProvider = ({ children }) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
 
-    // Hàm đăng nhập - chỉ cập nhật state và lưu user
     const login = (userData) => {
+        setIsAuthenticated(true);
         setUser(userData);
     };
 
-    // Hàm lấy thông tin user
-    const getUserProfile = async () => {
-        try {
-            const userInfo = localStorage.getItem('user');
-            if (userInfo) {
-                return JSON.parse(userInfo);
-            }
-            return null;
-        } catch (error) {
-            console.error('Chi tiết lỗi lấy profile:', error);
-            return null;
-        }
-    };
-
-    // Hàm đăng xuất
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        setIsAuthenticated(false);
         setUser(null);
-    };
-
-    const value = {
-        user,
-        login,
-        logout,
-        getUserProfile
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
     };
 
     return (
-        <AuthContext.Provider value={value}>
+        <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

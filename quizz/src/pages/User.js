@@ -6,22 +6,14 @@ import {
     FaUser, 
     FaEnvelope, 
     FaIdCard, 
-    FaCrown, 
-    FaHistory, 
-    FaCalendarAlt, 
-    FaTrophy, 
-    FaClock,
-    FaGraduationCap,
-    FaChartLine,
-    FaCheckCircle,
-    FaRegClock,
+    FaCrown,  
     FaUserCircle
 } from 'react-icons/fa';
 import './styles/User.css';
 
 const User = () => {
     const [userData, setUserData] = useState(null);
-    const [quizHistory, setQuizHistory] = useState([]);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('profile');
@@ -35,31 +27,7 @@ const User = () => {
                 const userDataFromStorage = JSON.parse(localStorage.getItem('user'));
                 if (userDataFromStorage) {
                     setUserData(userDataFromStorage);
-                    
-                    // Dữ liệu mẫu nâng cao cho quiz history
-                    setQuizHistory([
-                        {
-                            quizName: "Reading 1",
-                            completedAt: new Date().toISOString(),
-                            score: 85,
-                            totalQuestions: 40,
-                            correctAnswers: 34,
-                            timeSpent: 30,
-                            accuracy: 85,
-                            status: 'Đạt'
-                        },
-                        {
-                            quizName: "Reading 2",
-                            completedAt: new Date(Date.now() - 86400000).toISOString(),
-                            score: 90,
-                            totalQuestions: 40,
-                            correctAnswers: 36,
-                            timeSpent: 25,
-                            accuracy: 90,
-                            status: 'Xuất sắc'
-                        }
-                    ]);
-                    
+                 
                     setError(null);
                 } else {
                     navigate('/login');
@@ -75,34 +43,8 @@ const User = () => {
         fetchData();
     }, [navigate]);
 
-    const formatDate = (dateString) => {
-        const options = { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        };
-        return new Date(dateString).toLocaleDateString('vi-VN', options);
-    };
-
-    if (loading) {
-        return (
-            <div className="loading-container">
-                <div className="loading-spinner"></div>
-                <p>Loading...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="error-container">
-                <div className="error-icon">⚠️</div>
-                <p>{error}</p>
-            </div>
-        );
-    }
+    
+ 
 
     return (
         <div className="user-dashboard">
@@ -136,12 +78,7 @@ const User = () => {
                     >
                         <FaUser /> User Profile
                     </button>
-                    <button 
-                        className={`tab-button ${activeTab === 'history' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('history')}
-                    >
-                        <FaHistory /> History
-                    </button>
+                    
                 </div>
 
                 {activeTab === 'profile' && (
@@ -179,67 +116,7 @@ const User = () => {
                     </div>
                 )}
 
-                {activeTab === 'history' && (
-                    <div className="history-section">
-                        <div className="history-stats">
-                            <div className="stat-card">
-                                <FaChartLine className="stat-icon" />
-                                <div className="stat-info">
-                                    <h3>Average score</h3>
-                                    <p>{quizHistory.reduce((acc, quiz) => acc + quiz.score, 0) / quizHistory.length}%</p>
-                                </div>
-                            </div>
-                            <div className="stat-card">
-                                <FaCheckCircle className="stat-icon" />
-                                <div className="stat-info">
-                                    <h3>Test completed</h3>
-                                    <p>{quizHistory.length}</p>
-                                </div>
-                            </div>
-                            <div className="stat-card">
-                                <FaRegClock className="stat-icon" />
-                                <div className="stat-info">
-                                    <h3>Average time spent</h3>
-                                    <p>{Math.round(quizHistory.reduce((acc, quiz) => acc + quiz.timeSpent, 0) / quizHistory.length)} phút</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="history-list">
-                            {quizHistory.map((quiz, index) => (
-                                <div key={index} className="history-card">
-                                    <div className="history-card-header">
-                                        <h3><FaGraduationCap /> {quiz.quizName}</h3>
-                                        <span className={`status-badge ${quiz.score >= 90 ? 'excellent' : quiz.score >= 80 ? 'good' : 'normal'}`}>
-                                            {quiz.status}
-                                        </span>
-                                    </div>
-                                    <div className="history-card-content">
-                                        <div className="history-detail">
-                                            <FaCalendarAlt />
-                                            <span>{formatDate(quiz.completedAt)}</span>
-                                        </div>
-                                        <div className="history-detail">
-                                            <FaTrophy />
-                                            <span>{quiz.score}/100 points</span>
-                                        </div>
-                                        <div className="history-detail">
-                                            <FaClock />
-                                            <span>{quiz.timeSpent} minutes</span>
-                                        </div>
-                                    </div>
-                                    <div className="accuracy-bar">
-                                        <div 
-                                            className="accuracy-progress"
-                                            style={{ width: `${quiz.accuracy}%` }}
-                                        ></div>
-                                        <span className="accuracy-label">{quiz.accuracy}% Exactly</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+               
             </div>
         </div>
     );

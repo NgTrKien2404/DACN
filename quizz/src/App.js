@@ -11,7 +11,9 @@ import Result from './pages/Result';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import User from './pages/User';
+import QuizHistory from './pages/QuizHistory';
 import './App.css';
+
 
 const App = () => {
   const location = useLocation();
@@ -32,9 +34,11 @@ const App = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/quiz" element={<QuizList />} />
             <Route path="/quiz/:id" element={<Quiz />} />
+            <Route path="/quiz/:id/user/:userId" element={<Quiz />} />
             <Route path="/user" element={<User />} />
             <Route path="/quiz-result/:id" element={<QuizResult />} />
             <Route path="/result/:quizId" element={<Result />} />
+            <Route path="/quiz-history" element={<QuizHistory />} />
           </Routes>
         </main>
         {shouldShowHeader && <Footer />}

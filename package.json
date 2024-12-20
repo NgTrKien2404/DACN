@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "chart.js": "^4.4.7",
+    "dotenv": "^16.4.7",
+    "express-session": "^1.18.1",
+    "react-chartjs-2": "^5.2.0"
+  }
+}

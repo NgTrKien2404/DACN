@@ -7,9 +7,10 @@ const Result = require('./model/Result');
 const authMiddleware = require('./middleware/auth');
 const userController = require('./controllers/userController');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const app = express();
-
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 // Middleware
 app.use(cors({
     origin: 'http://localhost:3000',
@@ -44,18 +45,8 @@ const questionSchema = new mongoose.Schema({
   });
   
   const Question = mongoose.model('Question', questionSchema);
-
-  app.get('/api/weather', async (req, res) => {
-    const city = req.query.city || 'Hanoi';
-    const apiKey = 'YOUR_API_KEY'; // Thay bằng API Key của bạn
-
-    try {
-        const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: 'Không thể lấy dữ liệu thời tiết' });
-    }
-});
+  
+  
 
 // Register route
 app.post('/api/register', async (req, res) => {
@@ -185,6 +176,7 @@ app.post('/api/login', async (req, res) => {
             { expiresIn: '1h' }
         );
 
+       // Trả về đầy đủ thông tin user
         res.json({
             success: true,
             token,
@@ -346,44 +338,97 @@ app.get('/api/quizzes/:id', async (req, res) => {
 });
 
 // API submit quiz
-app.post('/api/quizzes/:id/submit', async (req, res) => {
+app.post('/api/quiz-result', async (req, res) => {
     try {
-        const { answers, score, user_id, reading_id, title } = req.body;
-        console.log('Received data:', req.body);
+        console.log('1. Received request body:', JSON.stringify(req.body, null, 2));
 
-        const result = new Result({
-            quiz_id: req.params.id,
-            user_id: user_id,
-            answers: answers.map(ans => ({
-                questionIndex: ans.questionIndex,
-                selectedOption: ans.selectedOption,
-                isCorrect: ans.isCorrect
-            })),
-            submittedAt: new Date(),
+        const { answers, user_id, quiz_id, score, userInfo } = req.body;
+
+        // Kiểm tra và log dữ liệu đầu vào
+        console.log('2. Input validation:', { 
+            hasAnswers: !!answers && Array.isArray(answers), 
+            answersLength: answers?.length,
+            userId: user_id, 
+            quizId: quiz_id,
             score: score,
-            reading_id: reading_id,
-            title: title,
-            created_at: new Date()
+            userInfo: userInfo
         });
 
-        const savedResult = await result.save();
-        console.log('Saved result:', savedResult);
+        // Kiểm tra dữ liệu đầu vào
+        if (!answers || !Array.isArray(answers) || !user_id || !quiz_id || score === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: 'Thiếu thông tin cần thiết hoặc dữ liệu không hợp lệ'
+            });
+        }
 
-        res.json({
-            success: true,
-            message: 'Đã lưu kết quả bài thi',
-            result: savedResult
+        // Kiểm tra từng câu trả lời
+        const validAnswers = answers.map(answer => ({
+            userAnswer: answer.userAnswer || '',
+            correctAnswer: answer.correctAnswer || '',
+            isCorrect: answer.isCorrect || false
+        }));
+
+        // Kiểm tra định dạng MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(quiz_id) || !mongoose.Types.ObjectId.isValid(user_id)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid quiz_id or user_id format'
+            });
+        }
+
+        // Lấy quiz từ cơ sở dữ liệu
+        const quiz = await Quiz.findById(quiz_id);
+        console.log('3. Quiz found:', quiz ? 'Yes' : 'No');
+
+        if (!quiz) {
+            return res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy bài quiz'
+            });
+        }
+
+        // Tạo đối tượng Result mới
+        const result = new Result({
+            quizId: quiz_id,
+            userId: user_id,
+            answers: answers,  // Sử dụng trực tiếp answers từ request
+            score: score,
+            submittedAt: new Date(),
+            userInfo: userInfo,
+            quizTitle: quiz.title, // Lưu tiêu đề bài thi
         });
+
+        console.log('4. Result object to save:', JSON.stringify(result, null, 2));
+
+        try {
+            const savedResult = await result.save();
+            console.log('5. Result saved successfully:', savedResult);
+
+            res.json({
+                success: true,
+                message: 'Kết quả bài quiz đã được lưu thành công',
+                result: savedResult
+            });
+        } catch (saveError) {
+            console.error('6. Error saving result:', saveError);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi lưu kết quả',
+                error: saveError.message
+            });
+        }
 
     } catch (error) {
-        console.error('Error saving result:', error);
+        console.error('7. General error:', error);
         res.status(500).json({
             success: false,
-            message: 'Lỗi khi lưu kết quả',
+            message: 'Lỗi server khi lưu kết quả quiz',
             error: error.message
         });
     }
 });
+
 
 // API tạo quiz mới
 app.post('/api/quizzes', async (req, res) => {
@@ -404,73 +449,10 @@ app.post('/api/quizzes', async (req, res) => {
     }
 });
 
-// API để tạo quiz mẫu (để test)
-app.get('/api/create-sample-quiz', async (req, res) => {
-    try {
-        const sampleQuiz = new Quiz({
-            title: "Bài thi mẫu",
-            description: "Đây là bài thi mẫu để test",
-            duration: 30, // 30 phút
-            questions: [
-                {
-                    questionText: "Thủ đô của Việt Nam là gì?",
-                    options: ["Hà Nội", "TP HCM", "Đà Nẵng", "Huế"],
-                    correctAnswer: "Hà Nội"
-                },
-                {
-                    questionText: "1 + 1 = ?",
-                    options: ["1", "2", "3", "4"],
-                    correctAnswer: "2"
-                }
-            ]
-        });
-        await sampleQuiz.save();
-        res.status(201).json({
-            success: true,
-            message: 'Tạo bài thi mẫu thành công',
-            quiz: sampleQuiz
-        });
-    } catch (error) {
-        console.error('Error creating sample quiz:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi khi tạo bài thi mẫu'
-        });
-    }
-});
 
-// API lưu kết quả bài thi
-app.post('/api/results', async (req, res) => {
-    try {
-        const { quiz_id, user_id, answers, score, reading_id, title } = req.body;
-        
-        const result = new Result({
-            quiz_id,
-            user_id,
-            answers,
-            score,
-            reading_id,
-            title,
-            submittedAt: new Date()
-        });
-
-        await result.save();
-
-        res.json({
-            success: true,
-            result
-        });
-    } catch (error) {
-        console.error('Error saving result:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error saving result'
-        });
-    }
-});
 
 // API lấy kết quả bài thi
-app.get('/api/results/:id', async (req, res) => {
+app.get('/api/result/:id', async (req, res) => {
     try {
         const result = await Result.findById(req.params.id);
         
@@ -518,3 +500,77 @@ app.listen(PORT, () => {
     console.log(`Register URL: http://localhost:${PORT}/api/register`);
     console.log(`Login URL: http://localhost:${PORT}/api/login`);
 });
+
+app.get('/api/results/:quizId', authMiddleware, async (req, res) => {
+    try {
+        const results = await Result.find({
+            quizId: req.params.quizId,
+            userId: req.user._id
+        }).sort({ submittedAt: -1 });
+
+        res.json({
+            success: true,
+            results
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching results',
+            error: error.message
+        });
+    }
+});
+
+// API để lấy lịch sử kết quả bài thi của user
+app.get('/api/quiz-results/:userId', authMiddleware, async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid user ID format'
+            });
+        }
+
+        // Tìm tất cả kết quả của user
+        const results = await Result.find({ userId })
+            .sort({ submittedAt: -1 })
+            .lean();
+
+        if (!results.length) {
+            return res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy kết quả nào'
+            });
+        }
+
+        // Format lại dữ liệu trước khi gửi về client
+        const formattedResults = results.map(result => ({
+            id: result._id,
+            quizTitle: result.quizTitle || 'Unknown Quiz',
+            quizDescription: result.quizDescription,
+            score: result.score,
+            submittedAt: result.submittedAt,
+            correctAnswers: result.answers.filter(answer => answer.isCorrect).length,
+            totalQuestions: result.answers.length
+        }));
+
+        res.json({
+            success: true,
+            results: formattedResults
+        });
+
+    } catch (error) {
+        console.error('Error fetching quiz results:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi khi lấy lịch sử bài thi',
+            error: error.message
+        });
+    }
+});
+
+
+
+

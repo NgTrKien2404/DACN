@@ -54,14 +54,14 @@ const Login = () => {
     return (
         <div className="login-container">
             <div className="login-card">
-                <h2>Chào mừng trở lại!</h2>
+                <h2>Welcome back!</h2>
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <input
                             type="email"
                             name="email"
-                            placeholder="Email của bạn"
+                            placeholder="Your Email"
                             value={formData.email}
                             onChange={handleChange}
                             required
@@ -71,7 +71,7 @@ const Login = () => {
                         <input
                             type="password"
                             name="password"
-                            placeholder="Mật khẩu"
+                            placeholder="Password"
                             value={formData.password}
                             onChange={handleChange}
                             required
@@ -83,14 +83,15 @@ const Login = () => {
                         disabled={isLoading}
                     >
                         {isLoading ? (
-                            <span>Đang đăng nhập...</span>
+                            <span>Logging in...</span>
                         ) : (
-                            <span>Đăng nhập</span>
+                            <span>Login</span>
                         )}
                     </button>
                 </form>
                 <div className="login-footer">
-                    <p>Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link></p>
+                    <p>Don't have an account? <Link to="/register">Register now</Link></p>
+                    
                 </div>
             </div>
         </div>

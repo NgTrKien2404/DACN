@@ -1,80 +1,91 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import quizService from '../Services/quizService';
+//import quizService from '../Services/quizService';
 import './styles/QuizList.css';
 
 const QuizList = () => {
     const [quizzes, setQuizzes] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                setIsLoading(true);
-                const response = await quizService.getQuizzes();
-                console.log('Quiz response:', response);
-                
-                // Kiểm tra response là một mảng
-                if (Array.isArray(response)) {
-                    setQuizzes(response);
-                } else {
-                    setQuizzes([]);
-                }
-            } catch (err) {
-                console.error('Error fetching quizzes:', err);
-                setError('Failed to load quizzes');
-                setQuizzes([]);
-            } finally {
-                setIsLoading(false);
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/api/quizzes', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                console.log("Fetched quiz data:", data); // Debug log
+                setQuizzes(data);
+            } catch (error) {
+                console.error('Error fetching quizzes:', error);
             }
         };
 
         fetchQuizzes();
     }, []);
 
-    if (isLoading) {
-        return (
-            <div className="quiz-list-container">
-                <div className="loading-state">
-                    <h2>Loading Quizzes...</h2>
-                    <div className="loading-spinner"></div>
-                </div>
-            </div>
-        );
-    }
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
+    };
 
-    if (error) {
-        return (
-            <div className="quiz-list-container">
-                <div className="error-state">
-                    <h2>Error</h2>
-                    <p>{error}</p>
-                </div>
-            </div>
-        );
-    }
+    const filteredQuizzes = quizzes.filter(quiz =>
+        quiz.Reading[0]?.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="quiz-list-container">
-            <h1>Available Quizzes</h1>
+            <h1 className="page-title">Quiz List</h1>
+            
+            <input
+                type="text"
+                placeholder="Search by title..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="search-input"
+            />
+            
             <div className="quiz-grid">
-                {quizzes.map((quiz) => (
-                    <div key={quiz._id} className="quiz-card">
-                        <h2>{quiz.Reading[0]?.title || 'Untitled Quiz'}</h2>
-                        <div className="quiz-info">
-                            <p>Start Time: {new Date(quiz.Start_time).toLocaleString()}</p>
-                            <p>End Time: {new Date(quiz.End_time).toLocaleString()}</p>
-                            <p>Questions: {quiz.questions?.length || 0}</p>
+                {filteredQuizzes.map((quiz) => {
+                    console.log("Quiz structure:", {
+                        id: quiz._id,
+                        title: quiz.title,
+                        questions: quiz.questions,
+                        fullQuiz: quiz
+                    });
+                    
+                    return (
+                        <div key={quiz._id} className="quiz-card">
+                            <div className="quiz-card-content">
+                                <div className="quiz-icon">
+                                    📚
+                                </div>
+                                <h3 className="quiz-title">{quiz.Reading?.[0]?.title || "Reading Quiz"}</h3>
+                                <div className="quiz-info">
+                                    <span className="info-item">
+                                        <i className="fas fa-question-circle"></i>
+                                        {quiz.Reading?.[0]?.questions?.length || 'N/A'} Quiz
+                                    </span>
+                                    <span className="info-item">
+                                        <i className="fas fa-clock"></i>
+                                        6 minutes
+                                    </span>
+                                </div>
+                                <p className="quiz-description">
+                                    {quiz.Reading?.[0]?.content?.substring(0, 100)}...
+                                </p>
+                                <Link 
+                                    to={`/quiz/${quiz._id}`} 
+                                    className="start-quiz-button"
+                                >
+                                    Start Quiz
+                                </Link>
+                            </div>
                         </div>
-                        <Link 
-                            to={`/quiz/${quiz._id}`} 
-                            className="start-quiz-btn"
-                        >
-                            Start Quiz
-                        </Link>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );
