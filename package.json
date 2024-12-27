@@ -3,6 +3,9 @@
     "chart.js": "^4.4.7",
     "dotenv": "^16.4.7",
     "express-session": "^1.18.1",
-    "react-chartjs-2": "^5.2.0"
+    "react-chartjs-2": "^5.2.0",
+    "sheetjs-style": "^0.15.8",
+    "xlsx": "^0.18.5",
+    "xlsx-style": "^0.8.13"
   }
 }
