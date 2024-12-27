@@ -96,6 +96,7 @@ const Quiz = () => {
             const quizResult = {
                 user_id: userId,
                 quiz_id: quizId,
+                quizTitle: quiz.title,
                 answers: answers,
                 score: score,
                 submittedAt: new Date().toISOString(),

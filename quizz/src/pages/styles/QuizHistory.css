@@ -1,25 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f7fa;
+    margin: 0;
+    padding: 0;
+}
 
 .quiz-history {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 50px;
-    max-width: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
     height: 100vh;
-    background-color: #f0f4f8;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-family: 'Arial', sans-serif;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
-.quiz-history h2 {
-    font-size: 1.8rem;
-    color: #333;
-    margin-bottom: 15px;
-    font-weight: bold;
-    text-align: center;
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.content-container {
+    display: flex;
+    justify-content: space-between;
     width: 100%;
-    position: relative;
+    gap: 20px;
 }
 
 .chart-container {
@@ -29,12 +42,12 @@
     justify-content: center;
     align-items: center;
     background-color: #ffffff;
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-right: 10px;
-    height: calc(90vh - 40px);
-    position: relative;
+    margin-top: 55px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: calc(90vh - 60px);
+    overflow-y: auto;
 }
 
 .table-container {
@@ -44,31 +57,30 @@
     justify-content: flex-start;
     align-items: center;
     background-color: #ffffff;
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-left: 10px;
-    height: calc(100vh - 40px);
+    margin-top: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: calc(90vh - 60px);
     overflow-y: auto;
-    position: relative;
 }
 
 .quiz-history table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 40px;
 }
 
 .quiz-history th, .quiz-history td {
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 12px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .quiz-history th {
-    background-color: #e0e7ff;
-    color: #333;
+    background-color: #007bff;
+    color: #ffffff;
     font-weight: bold;
 }
 
@@ -77,21 +89,21 @@
 }
 
 .quiz-history tr:hover {
-    background-color: #d1e7dd;
+    background-color: #e0f7fa;
     transition: background-color 0.3s;
 }
 
 button {
     background-color: #007bff;
     color: white;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-top: 10px;
     display: flex;
     align-items: center;
+    font-size: 1rem;
 }
 
 button:hover {
@@ -99,6 +111,6 @@ button:hover {
 }
 
 button .material-icons {
-    font-size: 1.2rem;
-    margin-right: 5px;
+    font-size: 1.5rem;
+    margin-right: 8px;
 }
