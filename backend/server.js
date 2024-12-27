@@ -340,87 +340,34 @@ app.get('/api/quizzes/:id', async (req, res) => {
 // API submit quiz
 app.post('/api/quiz-result', async (req, res) => {
     try {
-        console.log('1. Received request body:', JSON.stringify(req.body, null, 2));
+        const { answers, user_id, quiz_id, score, userInfo, quizTitle } = req.body;
 
-        const { answers, user_id, quiz_id, score, userInfo } = req.body;
-
-        // Kiểm tra và log dữ liệu đầu vào
-        console.log('2. Input validation:', { 
-            hasAnswers: !!answers && Array.isArray(answers), 
-            answersLength: answers?.length,
-            userId: user_id, 
-            quizId: quiz_id,
-            score: score,
-            userInfo: userInfo
-        });
-
-        // Kiểm tra dữ liệu đầu vào
-        if (!answers || !Array.isArray(answers) || !user_id || !quiz_id || score === undefined) {
+        if (!answers || !Array.isArray(answers) || !user_id || !quiz_id || score === undefined || !quizTitle) {
             return res.status(400).json({
                 success: false,
                 message: 'Thiếu thông tin cần thiết hoặc dữ liệu không hợp lệ'
             });
         }
 
-        // Kiểm tra từng câu trả lời
-        const validAnswers = answers.map(answer => ({
-            userAnswer: answer.userAnswer || '',
-            correctAnswer: answer.correctAnswer || '',
-            isCorrect: answer.isCorrect || false
-        }));
-
-        // Kiểm tra định dạng MongoDB ObjectId
-        if (!mongoose.Types.ObjectId.isValid(quiz_id) || !mongoose.Types.ObjectId.isValid(user_id)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid quiz_id or user_id format'
-            });
-        }
-
-        // Lấy quiz từ cơ sở dữ liệu
-        const quiz = await Quiz.findById(quiz_id);
-        console.log('3. Quiz found:', quiz ? 'Yes' : 'No');
-
-        if (!quiz) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy bài quiz'
-            });
-        }
-
-        // Tạo đối tượng Result mới
         const result = new Result({
             quizId: quiz_id,
             userId: user_id,
-            answers: answers,  // Sử dụng trực tiếp answers từ request
+            quizTitle: quizTitle,
+            answers: answers,
             score: score,
             submittedAt: new Date(),
-            userInfo: userInfo,
-            quizTitle: quiz.title, // Lưu tiêu đề bài thi
+            userInfo: userInfo
         });
 
-        console.log('4. Result object to save:', JSON.stringify(result, null, 2));
-
-        try {
-            const savedResult = await result.save();
-            console.log('5. Result saved successfully:', savedResult);
-
-            res.json({
-                success: true,
-                message: 'Kết quả bài quiz đã được lưu thành công',
-                result: savedResult
-            });
-        } catch (saveError) {
-            console.error('6. Error saving result:', saveError);
-            return res.status(500).json({
-                success: false,
-                message: 'Lỗi khi lưu kết quả',
-                error: saveError.message
-            });
-        }
+        const savedResult = await result.save();
+        res.json({
+            success: true,
+            message: 'Kết quả bài quiz đã được lưu thành công',
+            result: savedResult
+        });
 
     } catch (error) {
-        console.error('7. General error:', error);
+        console.error('Error saving quiz result:', error);
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi lưu kết quả quiz',
@@ -566,6 +513,43 @@ app.get('/api/quiz-results/:userId', authMiddleware, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Lỗi khi lấy lịch sử bài thi',
+            error: error.message
+        });
+    }
+});
+
+// API để xóa một kết quả bài thi của user
+app.delete('/api/quiz-results/:resultId', authMiddleware, async (req, res) => {
+    try {
+        const { resultId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(resultId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid result ID format'
+            });
+        }
+
+        // Tìm và xóa kết quả
+        const result = await Result.findByIdAndDelete(resultId);
+
+        if (!result) {
+            return res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy kết quả để xóa'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Xóa kết quả thành công'
+        });
+
+    } catch (error) {
+        console.error('Error deleting quiz result:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi khi xóa kết quả bài thi',
             error: error.message
         });
     }

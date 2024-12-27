@@ -26,6 +26,10 @@ const resultSchema = new mongoose.Schema({
         ref: 'User', 
         required: true 
     },
+    quizTitle: {
+        type: String,
+        required: true
+    },
     answers: [answerSchema],
     score: { 
         type: Number, 
